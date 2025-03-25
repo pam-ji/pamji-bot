@@ -14,13 +14,17 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    # Get the first channel to send the message
     for guild in client.guilds:
-        for channel in guild.text_channels:
+        channel = discord.utils.get(guild.text_channels, name='bot-talk')
+        if channel:
             await channel.send("Hello everyone! Special greetings to Malaria, Monk, and Ji!")
-            break
-        break
 
+async def close_bot():
+    for guild in client.guilds:
+        channel = discord.utils.get(guild.text_channels, name='bot-talk')
+        if channel:
+            await channel.send("Goodbye everyone! Bot is going offline.")
+    await client.close()
 
 @client.event
 async def on_message(message):
@@ -29,6 +33,9 @@ async def on_message(message):
 
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
+    
+    if message.content.startswith('$shutdown'):
+        await close_bot()
 
 
 try:
