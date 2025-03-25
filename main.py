@@ -53,6 +53,22 @@ async def send_response(channel, response):
                     await channel.send(
                         "Error: Channel not found."
                     )
+async def send_response2(guild, channel_name, response, autor, id, member_id):
+    """Sendet die Antwort nur im angegebenen Server (guild)"""
+    channel = discord.utils.get(guild.text_channels, name=channel_name)
+    if channel:
+        chunks = [response[i:i+1900] for i in range(0, len(response), 1900)]
+        for chunk in chunks:
+            await channel.send(chunk)
+    else:
+        # Fallback: Wenn der Kanal nicht existiert, im aktuellen Channel antworten
+        for guild_channel in guild.text_channels:
+            if guild_channel.permissions_for(guild.me).send_messages:
+                chunks = [f"⚠️ Kanal '{channel_name}' nicht gefunden! Hier ist die Antwort:\n{response[i:i+1900]}" for i in range(0, len(response), 1900)]
+                for chunk in chunks:
+                    await guild_channel.send(chunk)
+                break
+
 @discord_client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(discord_client))
@@ -70,6 +86,11 @@ async def close_bot():
 
 @discord_client.event
 async def on_message(message):
+    author=message.author.global_name
+    member_id=message.author.id
+    guild=message.guild
+    id=message.id
+    channel=message.channel.name
     print(message.content)
     if message.author == discord_client.user:
         return
@@ -82,7 +103,7 @@ async def on_message(message):
             print("gemini")
             user_input = message.content[len('gemini '):]
             response = generate_gemini_text(user_input)
-            await send_response('bot-talk', response)
+            await send_response2(guild, channel, response,author,id,member_id)
     if message.content.startswith('$deepseek'):
             print("deepsk")
             user_input = message.content[len('$deepseek '):]
