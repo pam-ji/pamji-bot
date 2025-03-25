@@ -32,12 +32,16 @@ async def close_bot():
 
 @client.event
 async def on_message(message):
-    print(message)
+    print(message.content)
     if message.author == client.user:
         return
 
     if message.content.startswith('$hello'):
-        await message.channel.send('Hello!')
+        print("hello")
+        channel = discord.utils.get(discordguild.text_channels, name='main')
+        if channel:
+            await channel.send(
+                "Hello everyone! Special greetings to Malaria, Monk, and Ji!")
 
     if message.content.startswith('$shutdown'):
         await close_bot()
