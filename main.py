@@ -14,10 +14,11 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
-    for guild in client.guilds:
-        channel = discord.utils.get(guild.text_channels, name='bot-talk')
-        if channel:
-            await channel.send("Hello everyone! Special greetings to Malaria, Monk, and Ji!")
+    # Greeting message disabled to avoid spam
+    # for guild in client.guilds:
+    #     channel = discord.utils.get(guild.text_channels, name='bot-talk')
+    #     if channel:
+    #         await channel.send("Hello everyone! Special greetings to Malaria, Monk, and Ji!")
 
 async def close_bot():
     for guild in client.guilds:
