@@ -5,6 +5,10 @@ import os
 import discord
 import requests
 import json
+from openai import OpenAI
+
+api_key = os.environ["DEEPSEEK_API_KEY"]
+deep_client = OpenAI(api_key=api_key, base_url="https://api.deepseek.com")
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -38,10 +42,12 @@ async def on_message(message):
 
     if message.content.startswith('$hello'):
         print("hello")
-        channel = discord.utils.get(discordguild.text_channels, name='main')
-        if channel:
-            await channel.send(
-                "Hello everyone! Special greetings to Malaria, Monk, and Ji!")
+        for guild in client.guilds:
+            channel = discord.utils.get(guild.text_channels, name='bot-talk')
+            if channel:
+                await channel.send(
+                    "Hello everyone! Special greetings to Malaria, Monk, and Ji!"
+                )
 
     if message.content.startswith('$shutdown'):
         await close_bot()
@@ -49,15 +55,30 @@ async def on_message(message):
     if message.content.startswith('$deepseek'):
         try:
             print("deepsk")
-            api_key = os.environ["DEEPSEEK_API_KEY"]
+
             user_input = message.content[len('$deepseek '):]
-            url = "YOUR_DEEPSEEK_API_ENDPOINT"  # Replace with your DeepSeek API endpoint
-            headers = {"Authorization": f"Bearer {api_key}"}
-            data = {"query": user_input}
-            response = requests.post(url, headers=headers, json=data)
-            response.raise_for_status(
-            )  # Raise HTTPError for bad responses (4xx or 5xx)
-            response_json = response.json()
+
+            response = deep_client.chat.completions.create(
+                model="deepseek-chat",
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are a helpful assistant"
+                    },
+                    {
+                        "role": "user",
+                        "content": user_input
+                    },
+                ],
+                stream=False)
+            print(response.choices[0].message.content)
+            # url = "https://api.deepseek.com/v1"  # Replace with your DeepSeek API endpoint
+            # headers = {"Authorization": f"Bearer {api_key}"}
+            # data = {"query": user_input}
+            # response = requests.post(url, headers=headers, json=data)
+            # response.raise_for_status(
+            # )  # Raise HTTPError for bad responses (4xx or 5xx)
+            response_json = response.choices[0].message.content
             await message.channel.send(json.dumps(response_json, indent=2)
                                        )  # Send formatted JSON response
         except requests.exceptions.RequestException as e:
