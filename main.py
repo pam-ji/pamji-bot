@@ -26,10 +26,10 @@ async def on_message(message):
 
 
 try:
-  token = os.getenv("TOKEN") or ""
-  if token == "":
-    raise Exception("Please add your token to the Secrets pane.")
-  client.run(token)
+    token = os.getenv("TOKEN") or ""
+    if token == "":
+        raise Exception("Please add your token to the Secrets pane.")
+    client.run(token)
 except discord.HTTPException as e:
     if e.status == 429:
         print(
