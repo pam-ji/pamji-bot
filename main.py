@@ -14,6 +14,12 @@ client = discord.Client(intents=intents)
 @client.event
 async def on_ready():
     print('We have logged in as {0.user}'.format(client))
+    # Get the first channel to send the message
+    for guild in client.guilds:
+        for channel in guild.text_channels:
+            await channel.send("Hello everyone! Special greetings to Malaria, Monk, and Ji!")
+            break
+        break
 
 
 @client.event
