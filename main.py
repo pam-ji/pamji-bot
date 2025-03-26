@@ -7,6 +7,7 @@ import requests
 import json
 from openai import OpenAI
 from google import genai
+from google.genai import types
 import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -23,7 +24,12 @@ gemini_models=gemini_client.models.list()
 
 def generate_gemini_text(prompt):
     response = gemini_client.models.generate_content(
-        model="gemini-2.0-flash", contents=prompt, max_tokens=MAX_TOKENS
+        model="gemini-2.0-flash", contents=prompt,
+        config=types.GenerateContentConfig(
+        system_instruction='You are the friendly Pamji-Bot. You are the right hand of the Pamji-Learning-Group that is doing ml-research and opensource software.',
+        max_output_tokens=MAX_TOKENS,
+        temperature=0.3,
+    ),
     )
     return response.text
 
