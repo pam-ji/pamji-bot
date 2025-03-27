@@ -1,7 +1,7 @@
 [project]
 name = "pamji_bot"
 version = "1.0.0"
-description = "The pamji discor bot."
+description = "The pamji discord bot."
 requires-python = ">=3.9.21"
 dependencies = [
 "discord",
