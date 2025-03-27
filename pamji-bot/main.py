@@ -13,18 +13,11 @@ from pathlib import Path
 from ai_api_utils import generate_deepseek_text
 from ai_api_utils import generate_gemini_text
 from dotenv import load_dotenv
-from flask import Flask
-from flask import request
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / '.env')
 
-
-app = Flask(__name__)
-API_NAME = os.getenv('API_NAME')
-API_DESCRIPTION = os.getenv('API_DESCRIPTION')
-API_VERSION = os.getenv('API_VERSION')
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -106,7 +99,7 @@ async def on_message(message):
         await send_response('bot-talk', response)
 
 try:
-    token = os.getenv("TOKEN") or ""
+    token = os.getenv("DISCORD_TOKEN") or ""
     if token == "":
         raise Exception("Please add your token to the Secrets pane.")
     discord_client.run(token)
