@@ -5,51 +5,35 @@ import os
 import discord
 import requests
 import json
-from openai import OpenAI
-from google import genai
-from google.genai import types
 import logging
+import hmac
+import os
+import subprocess
+from pathlib import Path
+from ai_api_utils import generate_deepseek_text
+from ai_api_utils import generate_gemini_text
+from dotenv import load_dotenv
+from flask import Flask
+from flask import request
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / '.env')
+
+
+app = Flask(__name__)
+API_NAME = os.getenv('API_NAME')
+API_DESCRIPTION = os.getenv('API_DESCRIPTION')
+API_VERSION = os.getenv('API_VERSION')
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
-gemini_client = genai.Client(api_key=GEMINI_API_KEY)
-deepseek_api_key = os.environ["DEEPSEEK_API_KEY"]
-deep_client = OpenAI(api_key=deepseek_api_key, base_url="https://api.deepseek.com")
 MAX_TOKENS = int(os.getenv("MAX_TOKENS", "256"))
 intents = discord.Intents.default()
 intents.message_content = True
 discord_client = discord.Client(intents=intents)
-gemini_models=gemini_client.models.list()
 
-def generate_gemini_text(prompt):
-    response = gemini_client.models.generate_content(
-        model="gemini-2.0-flash", contents=prompt,
-        config=types.GenerateContentConfig(
-        system_instruction='You are the friendly Pamji-Bot. You are the right hand of the Pamji-Learning-Group that is doing ml-research and opensource software.',
-        max_output_tokens=MAX_TOKENS,
-        temperature=0.3,
-    ),
-    )
-    return response.text
-
-def generate_deepseek_text(prompt):
-    response = deep_client.chat.completions.create(
-        model="deepseek-chat",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a helpful assistant"
-            },
-            {
-                "role": "user",
-                "content": prompt
-            },
-        ],
-        stream=False,
-        max_tokens=MAX_TOKENS
-    )
-    return response.choices[0].message.content
 
 async def send_response(channel, response):
   for guild in discord_client.guilds:
