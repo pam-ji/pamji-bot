@@ -98,14 +98,18 @@ async def on_message(message):
         response = generate_deepseek_text(user_input)
         await send_response('bot-talk', response)
 
-try:
-    token = os.getenv("DISCORD_TOKEN") or ""
-    if token == "":
-        raise Exception("Please add your token to the Secrets pane.")
-    discord_client.run(token)
-except discord.HTTPException as e:
-    if e.status == 429:
-        logger.error("The Discord servers denied the connection for making too many requests")
-        logger.error("Get help from https://stackoverflow.com/questions/66724687/in-discord-py-how-to-solve-the-error-for-toomanyrequests")
-    else:
-        raise e
+def start_bot():
+    try:
+        token = os.getenv("DISCORD_TOKEN") or ""
+        if token == "":
+            raise Exception("Please add your token to the Secrets pane.")
+        discord_client.run(token)
+    except discord.HTTPException as e:
+        if e.status == 429:
+            logger.error("The Discord servers denied the connection for making too many requests")
+            logger.error("Get help from https://stackoverflow.com/questions/66724687/in-discord-py-how-to-solve-the-error-for-toomanyrequests")
+        else:
+            raise e
+
+if __name__ == '__main__':
+    start_bot()
